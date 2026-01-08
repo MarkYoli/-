@@ -1,327 +1,469 @@
 <!DOCTYPE html>
-<!-- saved from url=(0032)https://minecraftx.vercel.app/ -->
-<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Испытай удачу</title>
+
+<link rel="preload" href="fonts/BenzinBold.woff2" as="font" type="font/woff2" crossorigin>
+
+<style>
+@font-face{
+  font-family:"BenzinBold";
+  src:url("fonts/BenzinBold.woff2") format("woff2");
+  font-display:swap;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  min-height:100vh;
+  /* мягкий сине-зелёный фон под Minecraft */
+  background:radial-gradient(circle at top,#3fbfff 0%,#1f7e6a 45%,#071b34 100%);
+  font-family:Inter,sans-serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+  overflow:hidden;
+  position:relative;
+}
+
+/* падающие кирки / эндерперлы */
+.mparticle{
+  position:fixed;
+  top:-80px;
+  width:40px;
+  height:40px;
+  background-size:contain;
+  background-repeat:no-repeat;
+  background-position:center;
+  pointer-events:none;
+  animation:mpFall linear infinite, mpFloat ease-in-out infinite;
+  z-index:1;
+  opacity:.9;
+  image-rendering:pixelated;
+}
+@keyframes mpFall{
+  to{transform:translateY(115vh);}
+}
+@keyframes mpFloat{
+  0%{margin-left:-15px;opacity:.1}
+  50%{margin-left:15px;opacity:1}
+  100%{margin-left:-15px;opacity:.1}
+}
+
+/* ===== PRELOADER ===== */
+#preloader{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,#46d3ff 0%,#218a6b 50%,#020c1a 100%);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  transition:.6s;
+}
+#preloader.hide{
+  opacity:0;
+  pointer-events:none;
+}
+
+.loader-box{
+  text-align:center;
+  font-family:BenzinBold;
+}
+
+.spinner{
+  width:70px;
+  height:70px;
+  border:5px solid rgba(255,255,255,.3);
+  border-top:5px solid #fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin:0 auto 20px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.percent{
+  margin-top:10px;
+  font-size:22px;
+}
+
+/* ===== MAIN ===== */
+.container{
+  max-width:480px;
+  width:100%;
+  text-align:center;
+  z-index:5;
+}
+
+.video-box{
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(14px);
+  max-width:420px;           /* чуть компактнее под квадратное видео */
+  margin:0 auto;
+}
+
+video{
+  width:100%;
+  display:block;
+  /* делаем обложку без уродливых полос – всегда заполняет карточку */
+  aspect-ratio:4/5;
+  background:#020814;
+  object-fit:cover;
+}
+
+.play-btn{
+  margin:25px auto 0;
+  width:100%;
+  max-width:320px;
+  padding:14px 18px;
+  font-family:BenzinBold;
+  font-size:18px;
+  border-radius:50px;
+  border:none;
+  cursor:pointer;
+  color:#fff;
+  /* чуть выделяется, но в той же гамме */
+  background:linear-gradient(135deg,#00e676,#00b0ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  animation:pulse 2s infinite;
+}
+.play-btn img.pickaxe-icon{
+  width:30px;
+  height:30px;
+  image-rendering:pixelated;
+}
+@keyframes pulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
+
+h2{
+  margin-top:40px;
+  font-family:BenzinBold;
+  background:linear-gradient(135deg,#fff,#b3e5ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.tg-btn{
+  display:inline-block;
+  margin-top:20px;
+  padding:14px 30px;
+  font-family:BenzinBold;
+  border-radius:50px;
+  background:linear-gradient(135deg,#00b7ff,#007fff);
+  color:#fff;
+  text-decoration:none;
+}
+
+/* ===== POPUP ===== */
+.popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  visibility:hidden;
+  transition:.4s;
+  z-index:20;
+  padding:20px;
+}
+.popup.active{
+  opacity:1;
+  visibility:visible;
+}
+
+.popup-box{
+  background:rgba(255,255,255,.12);
+  backdrop-filter:blur(18px);
+  padding:18px;
+  border-radius:18px;
+  text-align:center;
+  max-width:320px;
+  width:100%;
+}
+
+.win-amount{
+  color:#ff9f1a;
+  font-weight:900;
+}
+
+/* ===== МОБИЛЬНАЯ АДАПТАЦИЯ ===== */
+@media (max-width: 768px) {
+  body{
+    padding:10px 0;
+    overflow-y:auto;
+  }
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MINECRAFT</title>
-  <link href="./image/css2" rel="stylesheet">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+  .container{
+    max-width:90%;
+    padding:0 10px;
+    margin:0 auto;
+  }
+  
+  .video-box{
+    max-width:85%;
+    border-radius:16px;
+    box-shadow:0 15px 35px rgba(0,0,0,.7);
+  }
+  
+  video{
+    width:100%;
+    height:auto;
+    display:block;
+    object-fit:cover;
+  }
+  
+  .play-btn{
+    max-width:100%;
+    padding:12px 16px;
+    font-size:16px;
+    margin-top:20px;
+  }
+  
+  .play-btn img.pickaxe-icon{
+    width:24px;
+    height:24px;
+  }
+  
+  h2{
+    margin-top:30px;
+    font-size:20px;
+  }
+  
+  .tg-btn{
+    padding:12px 24px;
+    font-size:14px;
+    margin-top:18px;
+  }
+  
+  .popup-box{
+    max-width:90%;
+    padding:20px 16px;
+    border-radius:16px;
+  }
+  
+  .popup-box h3{
+    font-size:18px;
+  }
+  
+  .popup-box p{
+    font-size:14px;
+    margin-top:10px;
+  }
+  
+  /* падающие элементы на мобилке */
+  .mparticle{
+    width:40px !important;
+    height:40px !important;
+    max-width:56px;
+    max-height:56px;
+  }
+  
+  .loader-box p{
+    font-size:14px;
+  }
+  
+  .percent{
+    font-size:18px;
+  }
+}
 
-    body {
-      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
-      background-color: #0f0f23;
-      background-size: cover;
-      background-position: center;
-      min-height: 100vh;
-      color: #ffffff;
-      text-align: center;
-      padding: 40px 20px;
-      position: relative;
-      overflow-x: hidden;
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.1) 0%, transparent 50%);
-      pointer-events: none;
-      z-index: -1;
-    }
-
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 1;
-    }
-
-    .avatar {
-      width: 140px;
-      height: 140px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 4px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-      margin-bottom: 30px;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(10px);
-    }
-
-    .avatar:hover {
-      transform: translateY(-8px) scale(1.05);
-      box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.5),
-        0 0 0 1px rgba(255, 255, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
-
-    h1 {
-      font-family: "Playfair Display", serif;
-      font-size: clamp(28px, 5vw, 36px);
-      font-weight: 600;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 50%, #e8e9ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    h2 {
-      font-family: "Playfair Display", serif;
-      font-size: clamp(28px, 5vw, 36px);
-      font-weight: 600;
-      margin-bottom: 12px;
-      background: linear-gradient(135deg, #db3636 0%, #fff8f8 50%, #e8e9ff 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-    }
-
-    .subtitle {
-      font-size: 16px;
-      color: rgba(255, 255, 255, 0.7);
-      margin-bottom: 40px;
-      font-weight: 400;
-      letter-spacing: 0.5px;
-    }
-
-    .smaller-text {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.7);
-      margin-top: 10px;
-      font-weight: 400;
-    }
-
-    .links-container {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      align-items: center;
-    }
-
-    .link {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      max-width: 380px;
-      padding: 20px 30px;
-      border-radius: 16px;
-      text-decoration: none;
-      font-size: 18px;
-      font-weight: 600;
-      color: #ffffff;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      letter-spacing: 0.3px;
-    }
-
-    .link-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-right: 15px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .link:hover .link-icon {
-      transform: scale(1.1);
-      border-color: rgba(255, 255, 255, 0.5);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
-    }
-
-    .link-content {
-      display: flex;
-      align-items: center;
-      flex: 1;
-    }
-
-    .link::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: -1;
-    }
-
-    .link:nth-child(1) {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-    }
-
-    .link:nth-child(2) {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      box-shadow: 0 15px 35px rgba(240, 147, 251, 0.4);
-    }
-
-    .link:nth-child(3) {
-      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-      box-shadow: 0 15px 35px rgba(79, 172, 254, 0.4);
-    }
-
-    .link:nth-child(4) {
-      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-      box-shadow: 0 15px 35px rgba(67, 233, 123, 0.4);
-    }
-
-    .link:hover {
-      transform: translateY(-8px) scale(1.02);
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-      border-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .link:hover::before {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-    }
-
-    .link:active {
-      transform: translateY(-4px) scale(0.98);
-    }
-
-    .emoji {
-      font-size: 24px;
-      margin-right: 12px;
-      display: inline-block;
-      transition: transform 0.3s ease;
-    }
-
-    .link:hover .emoji {
-      transform: scale(1.2) rotate(5deg);
-    }
-
-    .video-container {
-      position: relative;
-      margin-bottom: 50px;
-    }
-
-    .video-box {
-      width: 100%;
-      max-width: 420px;
-      margin: 0 auto;
-      border-radius: 20px;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      max-height: 300px;
-    }
-
-    video {
-      width: 100%;
-      height: auto;
-      display: block;
-      border-radius: 20px;
-    }
-
-    @media (max-width: 480px) {
-      body {
-        padding: 30px 15px;
-      }
-      
-      .avatar {
-        width: 120px;
-        height: 120px;
-      }
-      
-      .link {
-        max-width: 100%;
-        padding: 18px 25px;
-        font-size: 16px;
-      }
-      
-      .video-box {
-        max-width: 100%;
-      }
-    }
-
-  </style>
+@media (max-width: 480px) {
+  body{
+    padding:8px 0;
+  }
+  
+  .container{
+    max-width:95%;
+    padding:0 8px;
+  }
+  
+  .video-box{
+    max-width:80%;
+    border-radius:12px;
+  }
+  
+  video{
+    object-fit:cover;
+  }
+  
+  .play-btn{
+    padding:10px 14px;
+    font-size:15px;
+    gap:8px;
+  }
+  
+  .play-btn img.pickaxe-icon{
+    width:20px;
+    height:20px;
+  }
+  
+  h2{
+    font-size:18px;
+    margin-top:24px;
+  }
+  
+  .tg-btn{
+    padding:10px 20px;
+    font-size:13px;
+  }
+  
+  .popup-box{
+    padding:18px 14px;
+  }
+  
+  .popup-box h3{
+    font-size:16px;
+  }
+  
+  .mparticle{
+    width:36px !important;
+    height:36px !important;
+    max-width:50px;
+    max-height:50px;
+  }
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <img src="./image/avia.webp" alt="Avatar" class="avatar">
 
-    <h1>ИНСТРУКЦИЯ</h1>
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="loader-box">
+    <div class="spinner"></div>
+    <p>Загрузка MINEDROP…</p>
+    <div class="percent" id="percent">0%</div>
+  </div>
+</div>
 
-    <div class="video-container">
-      <div class="video-box">
-        <video controls="">
-          <source src="video/tutor.mp4" type="video/mp4">
-          Ваш браузер не поддерживает воспроизведение видео.
-        </video>
-      </div>
-    </div>
-
-    <h1>ССЫЛКИ</h1>
-    <h2>ВКЛЮЧАЙТЕ VPN</h2>
-    
-    <div class="smaller-text">‼️Ты из Тик Тока? Не открывается? Жми три точки вверху справа и открыть в браузере✅</div>
-    <div class="smaller-text"> </div>
-
-    <div class="links-container">
-      <a class="link" href="https://t.me/+QTqnT5eOWC1lMDk6" target="_blank">
-        <img src="./image/avia.webp" alt="Aviamasters" class="link-icon">
-        <div class="link-content">
-          MineDrop - Играть в Браузере
-        </div>
-      </a>
-      <a class="link" href="https://t.me/+QTqnT5eOWC1lMDk6">
-        <img src="./image/tg.jpg" alt="Telegram" class="link-icon">
-        <div class="link-content">
-          MineDrop - Играть в Telegram  
-        </div>
-      </a>
-      <a class="link" href="https://t.me/+QTqnT5eOWC1lMDk6" target="_blank">
-        <img src="./image/tg.jpg" alt="Telegram" class="link-icon">
-        <div class="link-content">
-          Telegram-канал | Конкурсы 
-        </div>
-      </a>
-    </div>
+<!-- MAIN -->
+<div class="container">
+  <div class="video-box">
+    <video id="video" poster="images/photo_2025-12-05_18-15-40.png" preload="metadata" playsinline muted>
+      <source src="video/promo2.mp4" type="video/mp4">
+    </video>
   </div>
 
+  <button class="play-btn" id="play">
+    <img src="images/imagespickaxe_icon.png.png" alt="Pickaxe" class="pickaxe-icon">
+    ИСПЫТАТЬ УДАЧУ
+  </button>
 
+  <h2>НАЧНИ ИГРАТЬ</h2>
+  <a href="https://t.me/+WUKnbRXZo6w1Nzgy" class="tg-btn" target="_blank">
+    Перейти в Telegram
+  </a>
+</div>
 
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-box">
+    <h3>💰 Вы могли выиграть <span class="win-amount">25 280 ₽</span></h3>
+    <p>Попробуй прямо сейчас</p>
+    <a href="https://t.me/+WUKnbRXZo6w1Nzgy" class="tg-btn" target="_blank">
+      Испытать удачу
+    </a>
+  </div>
+</div>
 
+<script>
+/* ПАДАЮЩИЕ КИРКИ / ЭНДЕРПЕРЛЫ */
+const sprites=[
+  "images/pickaxe.png.png"
+];
 
+setInterval(()=>{
+  const el=document.createElement('div');
+  el.className='mparticle';
+  el.style.left=Math.random()*100+'vw';
 
+  const size=64+Math.random()*56; // 64–120px — ещё крупнее
+  el.style.width=size+'px';
+  el.style.height=size+'px';
 
+  const img=sprites[Math.floor(Math.random()*sprites.length)];
+  el.style.backgroundImage=`url("${img}")`;
 
-</body></html>
+  const fallDur=10+Math.random()*8; // 10–18 c
+  el.style.animationDuration=fallDur+'s, '+(6+Math.random()*4)+'s';
+
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),(fallDur+3)*1000);
+},650);
+
+/* PRELOADER */
+const percentEl=document.getElementById('percent');
+const preloader=document.getElementById('preloader');
+const video=document.getElementById('video');
+
+let progress=0;
+let done=false;
+
+const fake=setInterval(()=>{
+  if(progress<90){
+    progress++;
+    percentEl.textContent=progress+'%';
+  }
+},35);
+
+function finishLoader(){
+  if(done) return;
+  done=true;
+  clearInterval(fake);
+
+  const fin=setInterval(()=>{
+    if(progress<100){
+      progress++;
+      percentEl.textContent=progress+'%';
+    }else{
+      clearInterval(fin);
+      setTimeout(()=>preloader.classList.add('hide'),300);
+    }
+  },15);
+}
+
+video.addEventListener('loadeddata', finishLoader, { once:true });
+setTimeout(finishLoader, 4000);
+
+/* VIDEO + POPUP */
+document.getElementById('play').onclick=async()=>{
+  try{
+    video.muted=false;
+    await video.play();
+  }catch{
+    video.play();
+  }
+  /* попап появляется чуть позже — примерно когда цифры уже остановились */
+  setTimeout(()=>document.getElementById('popup').classList.add('active'),8000);
+};
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=104709922', 'ym');
+
+    ym(104709922, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/104709922" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+</body>
+</html>
